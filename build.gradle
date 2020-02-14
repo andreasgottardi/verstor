@@ -40,13 +40,7 @@ dependencies {
 
 test {
 	useJUnitPlatform()
-	
-	/* Set defaults for tests. Can be overwritten with parameters for JUnit tests and on commandline. */
-	/* jvmArgs = "-Dtest1=gradletest1 -Dtest2=gradletest2".split("\\s+") as List */
-	
-	if ( project.hasProperty('jvmArgs') ) {
-        jvmArgs += (project.jvmArgs.split("\\s+") as List)
-    }
+	systemProperty 'keepTestRepos', keepTestRepos
 }
 
 repositories {
