@@ -1,0 +1,68 @@
+
+plugins {
+    id 'java-library'
+    id 'eclipse'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '0.0.1'
+
+jar {
+
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': archiveVersion
+    } 
+    
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+
+    /* Logback */
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'ch.qos.logback:logback-core:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    
+    /* JUnit */
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    
+    /* JGit */
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r'
+    
+    /* https://mvnrepository.com/artifact/commons-io/commons-io */
+	implementation 'commons-io:commons-io:2.6'
+}
+
+test {
+	useJUnitPlatform()
+	
+	/* Set defaults for tests. Can be overwritten with parameters for JUnit tests and on commandline. */
+	/* jvmArgs = "-Dtest1=gradletest1 -Dtest2=gradletest2".split("\\s+") as List */
+	
+	if ( project.hasProperty('jvmArgs') ) {
+        jvmArgs += (project.jvmArgs.split("\\s+") as List)
+    }
+}
+
+repositories {
+
+    jcenter()
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["src/main/java", "src/main/resources"]
+        }
+    }
+    test {
+        resources {
+            srcDirs = ["src/test/java", "src/test/resources"]
+        }
+    }
+}
