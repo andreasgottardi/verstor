@@ -90,6 +90,21 @@ class JGitExTest {
 	}
 
 	@Test
+	public void testAddFilesToMaster() {
+
+		/* Create repository directory. */
+		JGitEx jge = new JGitEx();
+		Git git = jge.createTestRepo();
+
+		File directorytoadd = new File("testdata" + File.separator + "exres");
+		jge.addfiles(git, directorytoadd);
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), "exres").exists());
+
+		/* Cleanup */
+		cleanup(git);
+	}
+
+	@Test
 	public void getGetFileFromBranch() {
 
 		String targetbranch = "branch1";

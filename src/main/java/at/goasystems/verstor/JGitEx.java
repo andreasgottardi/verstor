@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -57,7 +58,7 @@ public class JGitEx {
 			if (git != null) {
 				for (String file : filesformaster) {
 					git.add().addFilepattern(file).call();
-					git.commit().setMessage("File " + file + " added.").call();
+					git.commit().setMessage(String.format("File %s added.", file)).call();
 				}
 			}
 		} catch (IllegalStateException | GitAPIException e) {
@@ -80,6 +81,21 @@ public class JGitEx {
 			git.checkout().setName("master").call();
 		} catch (GitAPIException e) {
 			logger.error("Error creating branch.", e);
+		}
+		return git;
+	}
+
+	public Git addfiles(Git git, File directory) {
+
+		try {
+			git.checkout().setName("master").call();
+			File workingdir = git.getRepository().getDirectory().getParentFile();
+			File newresdir = new File(workingdir, directory.getName());
+			FileUtils.copyDirectory(directory, newresdir);
+			git.add().addFilepattern(directory.getName()).call();
+			git.commit().setMessage("Directory " + directory.getName() + " added.").call();
+		} catch (GitAPIException | IOException e) {
+			logger.error("Error adding files.", e);
 		}
 		return git;
 	}
