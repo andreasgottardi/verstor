@@ -1,9 +1,9 @@
 package at.goasystems.verstor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -17,16 +17,27 @@ class ResourceTests {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceTests.class);
 
 	@Test
-	void testResourceSerialization() throws MalformedURLException {
-		Resource r = new Resource();
-		r.setMetadata(new MetaData());
-		File tmp = new File("logs/library-test-2020-02-14.log");
+	void testResourceSerialization() {
 
-		r.addFile(new LocalizedFile("de_DE", new File(tmp.getAbsoluteFile().toURI().toASCIIString())));
-		Gson g = new GsonBuilder().setPrettyPrinting().create();
+		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"files\":[{\"isocode\":\"de_DE\",\"file\":{\"path\":\".\"}}]}";
+		Resource r = generate();
+		/*
+		 * If Json should be formatted with new lines and indents add
+		 * ".setPrettyPrinting()" to GsonBuilder.
+		 */
+		Gson g = new GsonBuilder().create();
 		String json = g.toJson(r);
 		assertTrue(json != null);
+		assertEquals(json, expected);
 		logger.debug("Json string is as follows:{}{}", System.lineSeparator(), json);
+	}
+
+	private Resource generate() {
+		Resource r = new Resource();
+		r.setMetadata(new MetaData());
+		File tmp = new File(".");
+		r.addFile(new LocalizedFile("de_DE", tmp));
+		return r;
 	}
 
 }
