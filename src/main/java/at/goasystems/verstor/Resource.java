@@ -6,10 +6,11 @@ import java.util.List;
 public class Resource {
 
 	private String resourceid;
-	private List<LocalizedFile> files;
 	private MetaData metadata;
+	private List<LocalizedFile> files;
 
 	public Resource() {
+		this.resourceid = "";
 		this.metadata = new MetaData();
 		files = new ArrayList<>();
 	}
@@ -22,6 +23,14 @@ public class Resource {
 		this.resourceid = resourceid;
 	}
 
+	public MetaData getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(MetaData metadata) {
+		this.metadata = metadata;
+	}
+
 	public List<LocalizedFile> getFiles() {
 		return files;
 	}
@@ -32,13 +41,5 @@ public class Resource {
 
 	public void addFiles(List<LocalizedFile> files) {
 		this.files.addAll(files);
-	}
-
-	public MetaData getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(MetaData metadata) {
-		this.metadata = metadata;
 	}
 }

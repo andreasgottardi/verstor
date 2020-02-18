@@ -34,8 +34,11 @@ dependencies {
     /* JGit */
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r'
     
-    /* https://mvnrepository.com/artifact/commons-io/commons-io */
+    /* https://github.com/apache/commons-io */
 	implementation 'commons-io:commons-io:2.6'
+	
+	/* https://github.com/google/gson */
+	implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 test {

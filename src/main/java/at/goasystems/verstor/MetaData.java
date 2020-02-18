@@ -7,6 +7,9 @@ public class MetaData {
 	private String originextension;
 
 	public MetaData() {
+		this.resourcemimetype = "";
+		this.originmimetype = "";
+		this.originextension = "";
 	}
 
 	public MetaData(String resourcemimetype, String originmimetype, String originextension) {
