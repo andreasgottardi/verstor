@@ -4,8 +4,8 @@ import java.io.File;
 
 public class LocalizedFile {
 
-	String isocode;
-	File file;
+	private String isocode;
+	private File file;
 
 	public LocalizedFile(String isocode, File file) {
 		this.isocode = isocode;

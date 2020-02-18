@@ -15,6 +15,12 @@ public class Resource {
 		files = new ArrayList<>();
 	}
 
+	public Resource(String resourceid) {
+		this.resourceid = resourceid;
+		this.metadata = new MetaData();
+		files = new ArrayList<>();
+	}
+
 	public String getResourceid() {
 		return resourceid;
 	}
@@ -33,6 +39,10 @@ public class Resource {
 
 	public List<LocalizedFile> getFiles() {
 		return files;
+	}
+
+	public void setFiles(List<LocalizedFile> files) {
+		this.files = files;
 	}
 
 	public void addFile(LocalizedFile file) {

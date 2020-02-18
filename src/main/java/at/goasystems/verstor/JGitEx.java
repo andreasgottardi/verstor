@@ -1,10 +1,9 @@
 package at.goasystems.verstor;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.io.FileUtils;
@@ -21,6 +20,8 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 public class JGitEx {
 
 	private static final Logger logger = LoggerFactory.getLogger(JGitEx.class);
@@ -30,12 +31,15 @@ public class JGitEx {
 	private String[] filesformaster;
 	private String[] filesforbranch;
 
+	private Gson gson;
+
 	public JGitEx() {
 		filesformaster = new String[] { "master1.txt", "master2.txt", "master3.txt", "master4.txt" };
 		filesforbranch = new String[] { "branch1file1.txt", "branch1file2.txt" };
+		this.gson = new Gson();
 	}
 
-	public Git createTestRepo() {
+	public Git createRepository() {
 
 		/* Create repository directory. */
 		String temporaryId = getNewUniqueId();
@@ -50,50 +54,22 @@ public class JGitEx {
 			logger.error(ERROR, e);
 		}
 
-		/* Creates the files to versionize in the directory. */
-		createTestFiles(filesformaster, directory);
-
-		/* Adds and commits each file separately. */
-		try {
-			if (git != null) {
-				for (String file : filesformaster) {
-					git.add().addFilepattern(file).call();
-					git.commit().setMessage(String.format("File %s added.", file)).call();
-				}
-			}
-		} catch (IllegalStateException | GitAPIException e) {
-			logger.error(ERROR, e);
-		}
 		return git;
 	}
 
-	public Git createBranchAndAddFiles(Git git, String branchname) {
-
-		try {
-
-			git.checkout().setCreateBranch(true).setName(branchname).call();
-			createTestFiles(filesforbranch, git.getRepository().getDirectory().getParentFile());
-
-			for (String file : filesforbranch) {
-				git.add().addFilepattern(file).call();
-				git.commit().setMessage("File " + file + " added.").call();
-			}
-			git.checkout().setName("master").call();
-		} catch (GitAPIException e) {
-			logger.error("Error creating branch.", e);
-		}
-		return git;
-	}
-
-	public Git addfiles(Git git, File directory) {
+	public Git addResource(Git git, Resource resource) {
 
 		try {
 			git.checkout().setName("master").call();
 			File workingdir = git.getRepository().getDirectory().getParentFile();
-			File newresdir = new File(workingdir, directory.getName());
-			FileUtils.copyDirectory(directory, newresdir);
-			git.add().addFilepattern(directory.getName()).call();
-			git.commit().setMessage("Directory " + directory.getName() + " added.").call();
+			File newresdir = new File(workingdir, resource.getResourceid());
+			for (LocalizedFile localizedfile : resource.getFiles()) {
+				FileUtils.copyFileToDirectory(localizedfile.getFile(), new File(newresdir, localizedfile.getIsocode()));
+			}
+			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
+					StandardCharsets.UTF_8);
+			git.add().addFilepattern(newresdir.getName()).call();
+			git.commit().setMessage("Directory " + newresdir.getName() + " added.").call();
 		} catch (GitAPIException | IOException e) {
 			logger.error("Error adding files.", e);
 		}
@@ -104,73 +80,26 @@ public class JGitEx {
 		return Long.toString(new GregorianCalendar().getTimeInMillis());
 	}
 
-	private void createTestFiles(String[] cpsrc, File target) {
-
-		for (String source : cpsrc) {
-
-			try (InputStream is = JGitEx.class.getResourceAsStream("/jgit/" + source);
-					OutputStream os = new FileOutputStream(new File(target, source));) {
-
-				byte[] buffer = new byte[1024];
-				int read = is.read(buffer);
-				while (read != -1) {
-					os.write(buffer, 0, read);
-					read = is.read(buffer);
-				}
-
-			} catch (IOException e) {
-				logger.error("General_error", e);
-			}
-		}
-	}
-
-	public String[] getFilesForMaster() {
-		return filesformaster;
-	}
-
-	public String[] getFilesForBranch() {
-		return filesforbranch;
-	}
-
-	public void setFilestoversionize(String[] filestoversionize) {
-		this.filesformaster = filestoversionize;
-	}
-
-	public void exportFileFromBranch(Git git, String targetbranch, File exportfile) {
-
+	public void exportFileFromBranch(Git git, String targetbranch, String file, OutputStream exportto) {
 		Repository repository = git.getRepository();
-		FileOutputStream fos = null;
-
 		TreeWalk treeWalk = null;
-
 		try (RevWalk revWalk = new RevWalk(repository)) {
-
 			ObjectId lastCommitId = repository.resolve(targetbranch);
 			RevCommit commit = revWalk.parseCommit(lastCommitId);
 			RevTree tree = commit.getTree();
 			treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
 			treeWalk.setRecursive(true);
-			treeWalk.setFilter(PathFilter.create("branch1file1.txt"));
+			treeWalk.setFilter(PathFilter.create(file));
 			if (treeWalk.next()) {
 				ObjectId objectId = treeWalk.getObjectId(0);
 				ObjectLoader loader = repository.open(objectId);
-				fos = new FileOutputStream(exportfile);
-				loader.copyTo(fos);
+				loader.copyTo(exportto);
 			}
 			revWalk.dispose();
 		} catch (IOException e) {
 			logger.error(ERROR, e);
 		} finally {
-
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					logger.error(ERROR, e);
-				}
-			}
-
 			if (treeWalk != null) {
 				treeWalk.close();
 			}
