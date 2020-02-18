@@ -21,9 +21,12 @@ class JGitExTest {
 		/* Create repository directory. */
 		JGitEx jge = new JGitEx();
 		Git git = jge.createRepository();
-		Resource resource = generate();
-		jge.addResource(git, resource);
-		assertTrue(new File(git.getRepository().getDirectory().getParent(), resource.getResourceid()).exists());
+		Resource res1 = generate("res1");
+		Resource res2 = generate("res2");
+		jge.addResource(git, res1);
+		jge.addResource(git, res2);
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
 
 		/* Cleanup */
 		cleanup(git);
@@ -44,14 +47,14 @@ class JGitExTest {
 		}
 	}
 
-	private Resource generate() {
-		Resource r = new Resource("res1");
+	private Resource generate(String resource) {
+		Resource r = new Resource(resource);
 		r.setMetadata(new MetaData("text/plain", "", ""));
-		r.addFile(new LocalizedFile("de_DE", new File("testdata/res1/de_DE")));
-		r.addFile(new LocalizedFile("en_US", new File("testdata/res1/en_US")));
-		r.addFile(new LocalizedFile("es_ES", new File("testdata/res1/es_ES")));
-		r.addFile(new LocalizedFile("fr_FR", new File("testdata/res1/fr_FR")));
-		r.addFile(new LocalizedFile("it_IT", new File("testdata/res1/it_IT")));
+		r.addFile(new LocalizedFile("de_DE", new File("testdata/" + resource + "/de_DE")));
+		r.addFile(new LocalizedFile("en_US", new File("testdata/" + resource + "/en_US")));
+		r.addFile(new LocalizedFile("es_ES", new File("testdata/" + resource + "/es_ES")));
+		r.addFile(new LocalizedFile("fr_FR", new File("testdata/" + resource + "/fr_FR")));
+		r.addFile(new LocalizedFile("it_IT", new File("testdata/" + resource + "/it_IT")));
 		return r;
 	}
 }

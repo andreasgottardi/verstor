@@ -25,17 +25,10 @@ import com.google.gson.Gson;
 public class JGitEx {
 
 	private static final Logger logger = LoggerFactory.getLogger(JGitEx.class);
-
 	private static final String ERROR = "Error";
-
-	private String[] filesformaster;
-	private String[] filesforbranch;
-
 	private Gson gson;
 
 	public JGitEx() {
-		filesformaster = new String[] { "master1.txt", "master2.txt", "master3.txt", "master4.txt" };
-		filesforbranch = new String[] { "branch1file1.txt", "branch1file2.txt" };
 		this.gson = new Gson();
 	}
 
@@ -60,7 +53,6 @@ public class JGitEx {
 	public Git addResource(Git git, Resource resource) {
 
 		try {
-			git.checkout().setName("master").call();
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
 			for (LocalizedFile localizedfile : resource.getFiles()) {
@@ -69,7 +61,7 @@ public class JGitEx {
 			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
 					StandardCharsets.UTF_8);
 			git.add().addFilepattern(newresdir.getName()).call();
-			git.commit().setMessage("Directory " + newresdir.getName() + " added.").call();
+			git.commit().setMessage(String.format("Directory %s added.", newresdir.getName())).call();
 		} catch (GitAPIException | IOException e) {
 			logger.error("Error adding files.", e);
 		}
