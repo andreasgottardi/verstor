@@ -21,8 +21,9 @@ class VerstorTest {
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
 		Git git = jge.createRepository();
-		Resource res1 = generate("res1");
-		Resource res2 = generate("res2");
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
 		jge.addResource(git, res1);
 		jge.addResource(git, res2);
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
@@ -47,14 +48,12 @@ class VerstorTest {
 		}
 	}
 
-	private Resource generate(String resource) {
+	private Resource generate(String resource, String[] languages) {
 		Resource r = new Resource(resource);
 		r.setMetadata(new MetaData("text/plain", ".txt", "", ""));
-		r.addFile(new LocalizedFile("de_DE", "testdata/" + resource + "/de_DE"));
-		r.addFile(new LocalizedFile("en_US", "testdata/" + resource + "/en_US"));
-		r.addFile(new LocalizedFile("es_ES", "testdata/" + resource + "/es_ES"));
-		r.addFile(new LocalizedFile("fr_FR", "testdata/" + resource + "/fr_FR"));
-		r.addFile(new LocalizedFile("it_IT", "testdata/" + resource + "/it_IT"));
+		for (String language : languages) {
+			r.addFile(new LocalizedFile(language, "testdata/" + resource + "/" + language));
+		}
 		return r;
 	}
 }
