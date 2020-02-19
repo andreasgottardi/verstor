@@ -74,6 +74,32 @@ public class Verstor {
 		return git;
 	}
 
+	public Git removeResource(Git git, String resourceid) {
+		Resource resource = new Resource();
+		resource.setResourceid(resourceid);
+		removeResource(git, resource);
+		return git;
+	}
+
+	public Git removeResource(Git git, Resource resource) {
+
+		try {
+			git.checkout().setName("master").call();
+		} catch (GitAPIException e) {
+			logger.error("Were not able to checkout the master branch. Maybe it doesn't exist yet.", e);
+		}
+
+		try {
+			File workingdir = git.getRepository().getDirectory().getParentFile();
+			FileUtils.deleteDirectory(new File(workingdir, resource.getResourceid()));
+			git.add().addFilepattern(".").call();
+			git.commit().setMessage(String.format("Directory %s removed.", resource.getResourceid())).call();
+		} catch (GitAPIException | IOException e) {
+			logger.error("Error adding files.", e);
+		}
+		return git;
+	}
+
 	public String getNewUniqueId() {
 		return Long.toString(new GregorianCalendar().getTimeInMillis());
 	}

@@ -1,5 +1,6 @@
 package at.goasystems.verstor;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -16,7 +17,7 @@ class VerstorTest {
 	private static final Logger logger = LoggerFactory.getLogger(VerstorTest.class);
 
 	@Test
-	public void testAddFilesToMaster() {
+	public void testAddResource() {
 
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
@@ -28,6 +29,28 @@ class VerstorTest {
 		jge.addResource(git, res2);
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		/* Cleanup */
+		cleanup(git);
+	}
+
+	@Test
+	public void testRemoveResource() {
+
+		/* Create repository directory. */
+		Verstor jge = new Verstor();
+		Git git = jge.createRepository();
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
+		jge.addResource(git, res1);
+		jge.addResource(git, res2);
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		jge.removeResource(git, "res1");
+
+		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 
 		/* Cleanup */
 		cleanup(git);
