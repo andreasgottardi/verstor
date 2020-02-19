@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,31 @@ class VerstorTest {
 		jge.removeResource(git, "res1");
 
 		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+
+		/* Cleanup */
+		cleanup(git);
+	}
+
+	@Test
+	@Disabled("Logic in development.")
+	public void testExportFileFromCommit() {
+
+		/* Create repository directory. */
+		Verstor jge = new Verstor();
+		Git git = jge.createRepository();
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
+		jge.addResource(git, res1);
+		jge.addResource(git, res2);
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		jge.removeResource(git, "res1");
+
+		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+
+		jge.logDev(git);
 
 		/* Cleanup */
 		cleanup(git);

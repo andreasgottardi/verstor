@@ -9,6 +9,8 @@ import java.util.GregorianCalendar;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -92,7 +94,7 @@ public class Verstor {
 		try {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			FileUtils.deleteDirectory(new File(workingdir, resource.getResourceid()));
-			git.add().addFilepattern(".").call();
+			git.rm().addFilepattern(resource.getResourceid()).call();
 			git.commit().setMessage(String.format("Directory %s removed.", resource.getResourceid())).call();
 		} catch (GitAPIException | IOException e) {
 			logger.error("Error adding files.", e);
@@ -104,11 +106,11 @@ public class Verstor {
 		return Long.toString(new GregorianCalendar().getTimeInMillis());
 	}
 
-	public void exportFileFromBranch(Git git, String targetbranch, String file, OutputStream exportto) {
+	public void exportFileFromBranch(Git git, String file, OutputStream exportto) {
 		Repository repository = git.getRepository();
 		TreeWalk treeWalk = null;
 		try (RevWalk revWalk = new RevWalk(repository)) {
-			ObjectId lastCommitId = repository.resolve(targetbranch);
+			ObjectId lastCommitId = repository.resolve(getNewUniqueId());
 			RevCommit commit = revWalk.parseCommit(lastCommitId);
 			RevTree tree = commit.getTree();
 			treeWalk = new TreeWalk(repository);
@@ -127,6 +129,16 @@ public class Verstor {
 			if (treeWalk != null) {
 				treeWalk.close();
 			}
+		}
+	}
+
+	public void logDev(Git git) {
+		try {
+			ObjectId head = git.getRepository().resolve(Constants.HEAD);
+			Iterable<RevCommit> commits = git.log().add(head).setMaxCount(10).call();
+			logger.debug("Logs loaded.");
+		} catch (GitAPIException | RevisionSyntaxException | IOException e) {
+			logger.error(ERROR, e);
 		}
 	}
 }
