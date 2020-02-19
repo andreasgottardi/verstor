@@ -53,6 +53,12 @@ public class Verstor {
 	public Git addResource(Git git, Resource resource) {
 
 		try {
+			git.checkout().setName("master").call();
+		} catch (GitAPIException e) {
+			logger.error("Were not able to checkout the master branch. Maybe it doesn't exist yet.", e);
+		}
+
+		try {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
 			for (LocalizedFile localizedfile : resource.getFiles()) {
