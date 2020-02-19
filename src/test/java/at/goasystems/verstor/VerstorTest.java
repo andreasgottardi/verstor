@@ -50,11 +50,11 @@ class VerstorTest {
 	private Resource generate(String resource) {
 		Resource r = new Resource(resource);
 		r.setMetadata(new MetaData("text/plain", ".txt", "", ""));
-		r.addFile(new LocalizedFile("de_DE", new File("testdata/" + resource + "/de_DE")));
-		r.addFile(new LocalizedFile("en_US", new File("testdata/" + resource + "/en_US")));
-		r.addFile(new LocalizedFile("es_ES", new File("testdata/" + resource + "/es_ES")));
-		r.addFile(new LocalizedFile("fr_FR", new File("testdata/" + resource + "/fr_FR")));
-		r.addFile(new LocalizedFile("it_IT", new File("testdata/" + resource + "/it_IT")));
+		r.addFile(new LocalizedFile("de_DE", "testdata/" + resource + "/de_DE"));
+		r.addFile(new LocalizedFile("en_US", "testdata/" + resource + "/en_US"));
+		r.addFile(new LocalizedFile("es_ES", "testdata/" + resource + "/es_ES"));
+		r.addFile(new LocalizedFile("fr_FR", "testdata/" + resource + "/fr_FR"));
+		r.addFile(new LocalizedFile("it_IT", "testdata/" + resource + "/it_IT"));
 		return r;
 	}
 }

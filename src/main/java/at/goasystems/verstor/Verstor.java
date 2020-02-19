@@ -56,7 +56,7 @@ public class Verstor {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
 			for (LocalizedFile localizedfile : resource.getFiles()) {
-				FileUtils.copyFile(localizedfile.getFile(), new File(newresdir, localizedfile.getIsocode()));
+				FileUtils.copyFile(new File(localizedfile.getFile()), new File(newresdir, localizedfile.getIsocode()));
 			}
 			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
 					StandardCharsets.UTF_8);

@@ -3,10 +3,17 @@ package at.goasystems.verstor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Resource {
 
+	@SerializedName("resourceid")
 	private String resourceid;
+
+	@SerializedName("metadata")
 	private MetaData metadata;
+
+	@SerializedName("files")
 	private List<LocalizedFile> files;
 
 	public Resource() {

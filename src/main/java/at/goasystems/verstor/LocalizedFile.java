@@ -1,13 +1,16 @@
 package at.goasystems.verstor;
 
-import java.io.File;
+import com.google.gson.annotations.SerializedName;
 
 public class LocalizedFile {
 
+	@SerializedName("isocode")
 	private String isocode;
-	private File file;
 
-	public LocalizedFile(String isocode, File file) {
+	@SerializedName("file")
+	private String file;
+
+	public LocalizedFile(String isocode, String file) {
 		this.isocode = isocode;
 		this.file = file;
 	}
@@ -20,11 +23,11 @@ public class LocalizedFile {
 		this.isocode = isocode;
 	}
 
-	public File getFile() {
+	public String getFile() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public void setFile(String file) {
 		this.file = file;
 	}
 }

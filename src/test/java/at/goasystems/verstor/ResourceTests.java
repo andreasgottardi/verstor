@@ -3,8 +3,6 @@ package at.goasystems.verstor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,7 @@ class ResourceTests {
 	@Test
 	void testResourceSerialization() {
 
-		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"files\":[{\"isocode\":\"de_DE\",\"file\":{\"path\":\".\"}}]}";
+		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"files\":[{\"isocode\":\"de_DE\",\"file\":\".\"}]}";
 		Resource r = generate();
 		/*
 		 * If Json should be formatted with new lines and indents add
@@ -35,8 +33,7 @@ class ResourceTests {
 	private Resource generate() {
 		Resource r = new Resource();
 		r.setMetadata(new MetaData());
-		File tmp = new File(".");
-		r.addFile(new LocalizedFile("de_DE", tmp));
+		r.addFile(new LocalizedFile("de_DE", "."));
 		return r;
 	}
 
