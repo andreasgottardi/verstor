@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class JGitExTest {
+class VerstorTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(JGitExTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(VerstorTest.class);
 
 	@Test
 	public void testAddFilesToMaster() {
 
 		/* Create repository directory. */
-		JGitEx jge = new JGitEx();
+		Verstor jge = new Verstor();
 		Git git = jge.createRepository();
 		Resource res1 = generate("res1");
 		Resource res2 = generate("res2");
@@ -49,7 +49,7 @@ class JGitExTest {
 
 	private Resource generate(String resource) {
 		Resource r = new Resource(resource);
-		r.setMetadata(new MetaData("text/plain", "", ""));
+		r.setMetadata(new MetaData("text/plain", ".txt", "", ""));
 		r.addFile(new LocalizedFile("de_DE", new File("testdata/" + resource + "/de_DE")));
 		r.addFile(new LocalizedFile("en_US", new File("testdata/" + resource + "/en_US")));
 		r.addFile(new LocalizedFile("es_ES", new File("testdata/" + resource + "/es_ES")));

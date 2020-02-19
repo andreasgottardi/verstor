@@ -3,6 +3,7 @@ package at.goasystems.verstor;
 public class MetaData {
 
 	private String resourcemimetype;
+	private String resourceextension;
 	private String originmimetype;
 	private String originextension;
 
@@ -12,8 +13,9 @@ public class MetaData {
 		this.originextension = "";
 	}
 
-	public MetaData(String resourcemimetype, String originmimetype, String originextension) {
+	public MetaData(String resourcemimetype, String resourceextension, String originmimetype, String originextension) {
 		this.resourcemimetype = resourcemimetype;
+		this.resourceextension = resourceextension;
 		this.originmimetype = originmimetype;
 		this.originextension = originextension;
 	}
@@ -24,6 +26,14 @@ public class MetaData {
 
 	public void setResourcemimetype(String resourcemimetype) {
 		this.resourcemimetype = resourcemimetype;
+	}
+
+	public String getResourceextension() {
+		return resourceextension;
+	}
+
+	public void setResourceextension(String resourceextension) {
+		this.resourceextension = resourceextension;
 	}
 
 	public String getOriginmimetype() {

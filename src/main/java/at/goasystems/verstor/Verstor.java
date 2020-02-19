@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class JGitEx {
+public class Verstor {
 
-	private static final Logger logger = LoggerFactory.getLogger(JGitEx.class);
+	private static final Logger logger = LoggerFactory.getLogger(Verstor.class);
 	private static final String ERROR = "Error";
 	private Gson gson;
 
-	public JGitEx() {
+	public Verstor() {
 		this.gson = new Gson();
 	}
 
@@ -56,7 +56,7 @@ public class JGitEx {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
 			for (LocalizedFile localizedfile : resource.getFiles()) {
-				FileUtils.copyFileToDirectory(localizedfile.getFile(), new File(newresdir, localizedfile.getIsocode()));
+				FileUtils.copyFile(localizedfile.getFile(), new File(newresdir, localizedfile.getIsocode()));
 			}
 			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
 					StandardCharsets.UTF_8);
