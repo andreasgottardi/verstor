@@ -68,7 +68,7 @@ public class Verstor {
 	 * 
 	 * @param git      The repository
 	 * @param resource The resource to add
-	 * @return The repository (fluent api)
+	 * @return The repository (fluent API)
 	 */
 	public Git addResource(Git git, Resource resource) {
 
@@ -97,9 +97,9 @@ public class Verstor {
 	/**
 	 * Wrapper method for removeResource(Git git, Resource resource)
 	 * 
-	 * @param git      The repository
-	 * @param resource The resource to remove
-	 * @return
+	 * @param git        The repository
+	 * @param resourceid The resource to remove
+	 * @return The repository (fluent API)
 	 */
 	public Git removeResource(Git git, String resourceid) {
 		Resource resource = new Resource();
@@ -113,7 +113,7 @@ public class Verstor {
 	 * 
 	 * @param git      The repository
 	 * @param resource The resource to remove
-	 * @return
+	 * @return The repository (fluent API)
 	 */
 	public Git removeResource(Git git, Resource resource) {
 
