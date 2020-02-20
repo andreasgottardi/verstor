@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
@@ -39,6 +40,11 @@ public class Verstor {
 		this.gson = new Gson();
 	}
 
+	/**
+	 * Initializes the repository
+	 * 
+	 * @return The repository
+	 */
 	public Git createRepository() {
 
 		/* Create repository directory. */
@@ -57,6 +63,13 @@ public class Verstor {
 		return git;
 	}
 
+	/**
+	 * Adds a resource the the repository
+	 * 
+	 * @param git      The repository
+	 * @param resource The resource to add
+	 * @return The repository (fluent api)
+	 */
 	public Git addResource(Git git, Resource resource) {
 
 		try {
@@ -81,6 +94,13 @@ public class Verstor {
 		return git;
 	}
 
+	/**
+	 * Wrapper method for removeResource(Git git, Resource resource)
+	 * 
+	 * @param git      The repository
+	 * @param resource The resource to remove
+	 * @return
+	 */
 	public Git removeResource(Git git, String resourceid) {
 		Resource resource = new Resource();
 		resource.setResourceid(resourceid);
@@ -88,6 +108,13 @@ public class Verstor {
 		return git;
 	}
 
+	/**
+	 * Removes the given resource from the repository and commits the changes.
+	 * 
+	 * @param git      The repository
+	 * @param resource The resource to remove
+	 * @return
+	 */
 	public Git removeResource(Git git, Resource resource) {
 
 		try {
@@ -98,11 +125,16 @@ public class Verstor {
 
 		try {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
-			FileUtils.deleteDirectory(new File(workingdir, resource.getResourceid()));
-			git.rm().addFilepattern(resource.getResourceid()).call();
-			git.commit().setMessage(String.format("Directory %s removed.", resource.getResourceid())).call();
+			File resourcetodelete = new File(workingdir, resource.getResourceid());
+			if (resourcetodelete.exists()) {
+				FileUtils.deleteDirectory(resourcetodelete);
+				git.rm().addFilepattern(resource.getResourceid()).call();
+				git.commit().setMessage(String.format("Directory %s removed.", resource.getResourceid())).call();
+			} else {
+				logger.debug("Resource {} does not exist. No deletion required.", resource.getResourceid());
+			}
 		} catch (GitAPIException | IOException e) {
-			logger.error("Error adding files.", e);
+			logger.error("Error deleting files.", e);
 		}
 		return git;
 	}
@@ -111,10 +143,29 @@ public class Verstor {
 		return Long.toString(new GregorianCalendar().getTimeInMillis());
 	}
 
-	public void exportFileFromBranch(Git git, String commithash, OutputStream exportto) {
+	/**
+	 * Wrapper method for exportFileFromBranch(Git git, String commithash, String
+	 * resourceid, OutputStream exportto)
+	 * 
+	 * @param git        The repository
+	 * @param commithash The commit to get the file from
+	 * @param resource   The name of the resource
+	 * @param exportto   The output stream to save the files to
+	 */
+	public void exportFileFromBranch(Git git, String commithash, Resource resource, OutputStream exportto) {
+		exportFileFromBranch(git, commithash, resource.getResourceid(), exportto);
+	}
 
+	/**
+	 * Exports the subtree as zip file to the specified output stream.
+	 * 
+	 * @param git        The repository
+	 * @param commithash The commit to get the file from
+	 * @param resourceid The name of the resource
+	 * @param exportto   The output stream to save the files to
+	 */
+	public void exportFileFromBranch(Git git, String commithash, String resourceid, OutputStream exportto) {
 		ZipOutputStream zos = new ZipOutputStream(exportto);
-
 		Repository repository = git.getRepository();
 		TreeWalk treeWalk = null;
 		try (RevWalk revWalk = new RevWalk(repository)) {
@@ -124,7 +175,7 @@ public class Verstor {
 			treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
 			treeWalk.setRecursive(false);
-			treeWalk.setFilter(PathFilter.create("res1"));
+			treeWalk.setFilter(PathFilter.create(resourceid));
 			while (treeWalk.next()) {
 				if (treeWalk.isSubtree()) {
 					logger.debug("dir: {}", treeWalk.getPathString());
@@ -149,16 +200,29 @@ public class Verstor {
 		}
 	}
 
-	public List<String> logDev(Git git) {
-		List<String> commithashes = new ArrayList<>();
+	/**
+	 * Get the commits for the given folder
+	 * 
+	 * @param git    The repository
+	 * @param folder The resource folder name
+	 * @return List of commits
+	 */
+	public List<Commit> getCommits(Git git, String folder) {
+		List<Commit> commithashes = new ArrayList<>();
 		try {
 			ObjectId head = git.getRepository().resolve(Constants.HEAD);
-			Iterable<RevCommit> commits = git.log().add(head).setMaxCount(10).call();
+			LogCommand lc = git.log().add(head);
+			if (folder != null && !folder.isEmpty() && ".".compareTo(folder) != 0 && "/".compareTo(folder) != 0) {
+				lc = lc.addPath(folder);
+			}
+			Iterable<RevCommit> commits = lc.call();
 			logger.debug("Logs loaded.");
 			for (Iterator<RevCommit> iterator = commits.iterator(); iterator.hasNext();) {
 				RevCommit commit = iterator.next();
-				if (commit != null && commit.getName() != null) {
-					commithashes.add(commit.getName());
+				if (commit != null) {
+					Commit c = new Commit(commit.getName(), commit.getFullMessage(),
+							commit.getCommitterIdent().getWhen());
+					commithashes.add(c);
 				}
 			}
 		} catch (GitAPIException | RevisionSyntaxException | IOException e) {

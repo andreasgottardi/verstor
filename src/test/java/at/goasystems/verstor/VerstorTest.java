@@ -60,6 +60,28 @@ class VerstorTest {
 	}
 
 	@Test
+	public void testCommits() {
+
+		/* Create repository directory. */
+		Verstor jge = new Verstor();
+		Git git = jge.createRepository();
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
+		jge.addResource(git, res1);
+		jge.addResource(git, res2);
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+		List<Commit> commits = jge.getCommits(git, "");
+		assertTrue(commits.size() == 2);
+		commits = jge.getCommits(git, "res1");
+		assertTrue(commits.size() == 1);
+
+		/* Cleanup */
+		cleanup(git);
+	}
+
+	@Test
 	public void testExportFileFromCommit() {
 
 		/* Create repository directory. */
@@ -77,21 +99,20 @@ class VerstorTest {
 
 		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 
-		List<String> hashes = jge.logDev(git);
+		List<Commit> commits = jge.getCommits(git, "");
 
-		assertTrue(hashes.size() == 3);
+		assertTrue(commits.size() == 3);
 		File exportfile = new File(System.getProperty("java.io.tmpdir"), "export.zip");
 		try (FileOutputStream fos = new FileOutputStream(exportfile)) {
-			jge.exportFileFromBranch(git, hashes.get(1), fos);
+			jge.exportFileFromBranch(git, commits.get(1).getHash(), res1, fos);
 		} catch (IOException e) {
-			logger.error("Error writing to zip file.");
+			logger.error("Error writing to zip file.", e);
 		}
 		assertTrue(exportfile.exists());
 		try {
 			FileUtils.forceDelete(exportfile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error deleting file.", e);
 		}
 		/* Cleanup */
 		cleanup(git);
