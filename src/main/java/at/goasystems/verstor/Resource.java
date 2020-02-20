@@ -3,29 +3,22 @@ package at.goasystems.verstor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Resource {
 
-	@SerializedName("resourceid")
 	private String resourceid;
-
-	@SerializedName("metadata")
 	private MetaData metadata;
-
-	@SerializedName("files")
-	private List<LocalizedFile> files;
+	private List<LocalizedFile> localizedfiles;
 
 	public Resource() {
 		this.resourceid = "";
 		this.metadata = new MetaData();
-		files = new ArrayList<>();
+		localizedfiles = new ArrayList<>();
 	}
 
 	public Resource(String resourceid) {
 		this.resourceid = resourceid;
 		this.metadata = new MetaData();
-		files = new ArrayList<>();
+		localizedfiles = new ArrayList<>();
 	}
 
 	public String getResourceid() {
@@ -44,19 +37,19 @@ public class Resource {
 		this.metadata = metadata;
 	}
 
-	public List<LocalizedFile> getFiles() {
-		return files;
+	public List<LocalizedFile> getLocalizedfiles() {
+		return localizedfiles;
 	}
 
-	public void setFiles(List<LocalizedFile> files) {
-		this.files = files;
+	public void setLocalizedfiles(List<LocalizedFile> localizedfiles) {
+		this.localizedfiles = localizedfiles;
 	}
 
 	public void addFile(LocalizedFile file) {
-		this.files.add(file);
+		this.localizedfiles.add(file);
 	}
 
 	public void addFiles(List<LocalizedFile> files) {
-		this.files.addAll(files);
+		this.localizedfiles.addAll(files);
 	}
 }

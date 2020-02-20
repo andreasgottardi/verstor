@@ -9,6 +9,7 @@ public class MetaData {
 
 	public MetaData() {
 		this.resourcemimetype = "";
+		this.resourceextension = "";
 		this.originmimetype = "";
 		this.originextension = "";
 	}

@@ -17,7 +17,7 @@ class ResourceTests {
 	@Test
 	void testResourceSerialization() {
 
-		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"files\":[{\"isocode\":\"de_DE\",\"file\":\".\"}]}";
+		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"resourceextension\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"localizedfiles\":[{\"isocode\":\"de_DE\",\"file\":\".\"}]}";
 		Resource r = generate();
 		/*
 		 * If Json should be formatted with new lines and indents add

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -66,7 +68,7 @@ public class Verstor {
 		try {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
-			for (LocalizedFile localizedfile : resource.getFiles()) {
+			for (LocalizedFile localizedfile : resource.getLocalizedfiles()) {
 				FileUtils.copyFile(new File(localizedfile.getFile()), new File(newresdir, localizedfile.getIsocode()));
 			}
 			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
@@ -109,22 +111,34 @@ public class Verstor {
 		return Long.toString(new GregorianCalendar().getTimeInMillis());
 	}
 
-	public void exportFileFromBranch(Git git, String file, OutputStream exportto) {
+	public void exportFileFromBranch(Git git, String commithash, OutputStream exportto) {
+
+		ZipOutputStream zos = new ZipOutputStream(exportto);
+
 		Repository repository = git.getRepository();
 		TreeWalk treeWalk = null;
 		try (RevWalk revWalk = new RevWalk(repository)) {
-			ObjectId lastCommitId = repository.resolve(getNewUniqueId());
+			ObjectId lastCommitId = repository.resolve(commithash);
 			RevCommit commit = revWalk.parseCommit(lastCommitId);
 			RevTree tree = commit.getTree();
 			treeWalk = new TreeWalk(repository);
 			treeWalk.addTree(tree);
-			treeWalk.setRecursive(true);
-			treeWalk.setFilter(PathFilter.create(file));
-			if (treeWalk.next()) {
-				ObjectId objectId = treeWalk.getObjectId(0);
-				ObjectLoader loader = repository.open(objectId);
-				loader.copyTo(exportto);
+			treeWalk.setRecursive(false);
+			treeWalk.setFilter(PathFilter.create("res1"));
+			while (treeWalk.next()) {
+				if (treeWalk.isSubtree()) {
+					logger.debug("dir: {}", treeWalk.getPathString());
+					treeWalk.enterSubtree();
+				} else {
+					logger.debug("file: {}", treeWalk.getPathString());
+					zos.putNextEntry(new ZipEntry(treeWalk.getPathString()));
+					ObjectId objectId = treeWalk.getObjectId(0);
+					ObjectLoader loader = repository.open(objectId);
+					loader.copyTo(zos);
+					zos.closeEntry();
+				}
 			}
+			zos.close();
 			revWalk.dispose();
 		} catch (IOException e) {
 			logger.error(ERROR, e);

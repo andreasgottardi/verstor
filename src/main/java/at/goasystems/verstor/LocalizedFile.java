@@ -1,13 +1,8 @@
 package at.goasystems.verstor;
 
-import com.google.gson.annotations.SerializedName;
-
 public class LocalizedFile {
 
-	@SerializedName("isocode")
 	private String isocode;
-
-	@SerializedName("file")
 	private String file;
 
 	public LocalizedFile(String isocode, String file) {

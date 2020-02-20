@@ -2,22 +2,24 @@
 plugins {
     id 'java-library'
     id 'eclipse'
+	id 'maven-publish'
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+group = 'at.goasystems'
 version = '0.0.1'
 
 jar {
 
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': archiveVersion
     } 
-    
+    /*
     from {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    */
 }
 
 dependencies {
@@ -63,3 +65,43 @@ sourceSets {
         }
     }
 }
+
+/* Maven publish logic enabling Gradle to build jar files for sources, javadoc and test code. */
+
+task sourcesJar(type: Jar, dependsOn: classes, group: "build", description: "Generate sources jar") {
+	classifier = 'sources'
+	duplicatesStrategy=DuplicatesStrategy.EXCLUDE
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc, group: "build", description: "Generate Javadoc jar") {
+	classifier = 'javadoc'
+	duplicatesStrategy=DuplicatesStrategy.EXCLUDE
+	from javadoc.destinationDir
+}
+
+task testJar(type: Jar, dependsOn: javadoc, group: "build", description: "Generate tests jar") {
+	classifier = 'tests'
+	duplicatesStrategy=DuplicatesStrategy.EXCLUDE
+	from sourceSets.test.output
+}
+
+publishing {
+	publications {
+		verstor(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+			artifact testJar
+		}
+	}
+
+	repositories {
+		maven {
+			url = repositorydir
+		}
+	}
+}
+/* End of Maven logic. */
+
+compileJava.dependsOn clean
