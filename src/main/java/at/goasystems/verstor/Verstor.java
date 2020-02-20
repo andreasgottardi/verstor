@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -132,13 +135,21 @@ public class Verstor {
 		}
 	}
 
-	public void logDev(Git git) {
+	public List<String> logDev(Git git) {
+		List<String> commithashes = new ArrayList<>();
 		try {
 			ObjectId head = git.getRepository().resolve(Constants.HEAD);
 			Iterable<RevCommit> commits = git.log().add(head).setMaxCount(10).call();
 			logger.debug("Logs loaded.");
+			for (Iterator<RevCommit> iterator = commits.iterator(); iterator.hasNext();) {
+				RevCommit commit = iterator.next();
+				if (commit != null && commit.getName() != null) {
+					commithashes.add(commit.getName());
+				}
+			}
 		} catch (GitAPIException | RevisionSyntaxException | IOException e) {
 			logger.error(ERROR, e);
 		}
+		return commithashes;
 	}
 }

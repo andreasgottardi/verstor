@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ class VerstorTest {
 	}
 
 	@Test
-	@Disabled("Logic in development.")
+//	@Disabled("Logic in development.")
 	public void testExportFileFromCommit() {
 
 		/* Create repository directory. */
@@ -76,7 +76,9 @@ class VerstorTest {
 
 		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 
-		jge.logDev(git);
+		List<String> hashes = jge.logDev(git);
+
+		assertTrue(hashes.size() == 3);
 
 		/* Cleanup */
 		cleanup(git);
