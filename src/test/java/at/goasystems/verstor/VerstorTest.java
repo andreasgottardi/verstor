@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -23,7 +24,7 @@ class VerstorTest {
 
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
-		Git git = jge.createRepository();
+		Git git = jge.createRepository(genTmpRepoDir());
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -42,7 +43,7 @@ class VerstorTest {
 
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
-		Git git = jge.createRepository();
+		Git git = jge.createRepository(genTmpRepoDir());
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -64,7 +65,7 @@ class VerstorTest {
 
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
-		Git git = jge.createRepository();
+		Git git = jge.createRepository(genTmpRepoDir());
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -86,7 +87,7 @@ class VerstorTest {
 
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
-		Git git = jge.createRepository();
+		Git git = jge.createRepository(genTmpRepoDir());
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -140,5 +141,19 @@ class VerstorTest {
 			r.addFile(new LocalizedFile(language, "testdata/" + resource + "/" + language));
 		}
 		return r;
+	}
+
+	/**
+	 * Generates a temporary directory file object. This is only a virtual "File"
+	 * object. The directory is not actually created on the disk. This has to be
+	 * done by the consumers of this function.
+	 * 
+	 * @return
+	 */
+	private File genTmpRepoDir() {
+
+		String temporaryId = Long.toString(new GregorianCalendar().getTimeInMillis());
+		File directory = new File(System.getProperty("java.io.tmpdir"), temporaryId);
+		return directory;
 	}
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -33,7 +32,6 @@ import com.google.gson.Gson;
 public class Verstor {
 
 	private static final Logger logger = LoggerFactory.getLogger(Verstor.class);
-	private static final String ERROR = "Error";
 	private Gson gson;
 
 	public Verstor() {
@@ -45,19 +43,18 @@ public class Verstor {
 	 * 
 	 * @return The repository
 	 */
-	public Git createRepository() {
+	public Git createRepository(File repositorydirectory) {
 
-		/* Create repository directory. */
-		String temporaryId = getNewUniqueId();
-		File directory = new File(System.getProperty("java.io.tmpdir"), temporaryId);
-		directory.mkdir();
+		if (!repositorydirectory.exists()) {
+			repositorydirectory.mkdirs();
+		}
 
 		/* Create repository. */
 		Git git = null;
 		try {
-			git = Git.init().setDirectory(directory).call();
+			git = Git.init().setDirectory(repositorydirectory).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			logger.error(ERROR, e);
+			logger.error("Can not initialize repository.", e);
 		}
 
 		return git;
@@ -95,7 +92,7 @@ public class Verstor {
 	}
 
 	/**
-	 * Wrapper method for removeResource(Git git, Resource resource)
+	 * Wrapper method for removeResource(Git, Resource)
 	 * 
 	 * @param git        The repository
 	 * @param resourceid The resource to remove
@@ -139,13 +136,8 @@ public class Verstor {
 		return git;
 	}
 
-	public String getNewUniqueId() {
-		return Long.toString(new GregorianCalendar().getTimeInMillis());
-	}
-
 	/**
-	 * Wrapper method for exportFileFromBranch(Git git, String commithash, String
-	 * resourceid, OutputStream exportto)
+	 * Wrapper method for exportFileFromBranch(Git, String, String, OutputStream)
 	 * 
 	 * @param git        The repository
 	 * @param commithash The commit to get the file from
@@ -192,7 +184,7 @@ public class Verstor {
 			zos.close();
 			revWalk.dispose();
 		} catch (IOException e) {
-			logger.error(ERROR, e);
+			logger.error("Error extracting files from branch to zip file.", e);
 		} finally {
 			if (treeWalk != null) {
 				treeWalk.close();
@@ -216,7 +208,6 @@ public class Verstor {
 				lc = lc.addPath(folder);
 			}
 			Iterable<RevCommit> commits = lc.call();
-			logger.debug("Logs loaded.");
 			for (Iterator<RevCommit> iterator = commits.iterator(); iterator.hasNext();) {
 				RevCommit commit = iterator.next();
 				if (commit != null) {
@@ -226,7 +217,7 @@ public class Verstor {
 				}
 			}
 		} catch (GitAPIException | RevisionSyntaxException | IOException e) {
-			logger.error(ERROR, e);
+			logger.error("Error collecting git commits.", e);
 		}
 		return commithashes;
 	}
