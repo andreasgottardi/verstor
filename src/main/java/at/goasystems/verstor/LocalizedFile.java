@@ -1,13 +1,15 @@
 package at.goasystems.verstor;
 
+import java.net.URI;
+
 public class LocalizedFile {
 
 	private String isocode;
-	private String file;
+	private URI uri;
 
-	public LocalizedFile(String isocode, String file) {
+	public LocalizedFile(String isocode, URI uri) {
 		this.isocode = isocode;
-		this.file = file;
+		this.uri = uri;
 	}
 
 	public String getIsocode() {
@@ -18,11 +20,11 @@ public class LocalizedFile {
 		this.isocode = isocode;
 	}
 
-	public String getFile() {
-		return file;
+	public URI getUri() {
+		return uri;
 	}
 
-	public void setFile(String file) {
-		this.file = file;
+	public void setUri(URI uri) {
+		this.uri = uri;
 	}
 }

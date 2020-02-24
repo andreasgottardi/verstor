@@ -3,6 +3,9 @@ package at.goasystems.verstor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,7 @@ class ResourceTests {
 	@Test
 	void testResourceSerialization() {
 
-		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"resourceextension\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"localizedfiles\":[{\"isocode\":\"de_DE\",\"file\":\".\"}]}";
+		String expected = "{\"resourceid\":\"\",\"metadata\":{\"resourcemimetype\":\"\",\"resourceextension\":\"\",\"originmimetype\":\"\",\"originextension\":\"\"},\"localizedfiles\":[{\"isocode\":\"de_DE\",\"uri\":\".\"}]}";
 		Resource r = generate();
 		/*
 		 * If Json should be formatted with new lines and indents add
@@ -33,7 +36,11 @@ class ResourceTests {
 	private Resource generate() {
 		Resource r = new Resource();
 		r.setMetadata(new MetaData());
-		r.addFile(new LocalizedFile("de_DE", "."));
+		try {
+			r.addFile(new LocalizedFile("de_DE", new URI(".")));
+		} catch (URISyntaxException e) {
+			logger.error("Cant add file to resource.");
+		}
 		return r;
 	}
 

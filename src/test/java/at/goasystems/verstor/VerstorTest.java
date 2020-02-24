@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -138,7 +139,12 @@ class VerstorTest {
 		Resource r = new Resource(resource);
 		r.setMetadata(new MetaData("text/plain", ".txt", "", ""));
 		for (String language : languages) {
-			r.addFile(new LocalizedFile(language, "testdata/" + resource + "/" + language));
+			try {
+				r.addFile(new LocalizedFile(language,
+						VerstorTest.class.getResource("/testdata/" + resource + "/" + language).toURI()));
+			} catch (URISyntaxException e) {
+				logger.error("Cant add file to resource.");
+			}
 		}
 		return r;
 	}
