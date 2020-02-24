@@ -41,6 +41,7 @@ public class Verstor {
 	/**
 	 * Initializes the repository
 	 * 
+	 * @param repositorydirectory The repository directory
 	 * @return The repository
 	 */
 	public Git createRepository(File repositorydirectory) {
