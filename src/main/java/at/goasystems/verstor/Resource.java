@@ -14,6 +14,7 @@ public class Resource {
 	public Resource() {
 		this.resourceid = "";
 		this.metadata = new MetaData();
+		this.origin = null;
 		localizedfiles = new ArrayList<>();
 	}
 

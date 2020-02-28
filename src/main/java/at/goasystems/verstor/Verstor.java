@@ -84,7 +84,9 @@ public class Verstor {
 			}
 			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
 					StandardCharsets.UTF_8);
-			FileUtils.copyFile(new File(resource.getOrigin()), new File(newresdir, "origin"));
+			if (resource.getOrigin() != null) {
+				FileUtils.copyFile(new File(resource.getOrigin()), new File(newresdir, "origin"));
+			}
 			git.add().addFilepattern(newresdir.getName()).call();
 			git.commit().setMessage(String.format("Directory %s added.", newresdir.getName())).call();
 		} catch (GitAPIException | IOException e) {
