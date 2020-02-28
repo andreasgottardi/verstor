@@ -1,5 +1,6 @@
 package at.goasystems.verstor;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ public class Resource {
 
 	private String resourceid;
 	private MetaData metadata;
+	private URI origin;
 	private List<LocalizedFile> localizedfiles;
 
 	public Resource() {
@@ -35,6 +37,14 @@ public class Resource {
 
 	public void setMetadata(MetaData metadata) {
 		this.metadata = metadata;
+	}
+
+	public URI getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(URI origin) {
+		this.origin = origin;
 	}
 
 	public List<LocalizedFile> getLocalizedfiles() {
