@@ -62,7 +62,8 @@ public class Verstor {
 	}
 
 	/**
-	 * Adds a resource the the repository
+	 * Adds a resource the the repository. If resource already exists, a update is
+	 * performed and the Git log message is set accordingly.
 	 * 
 	 * @param git      The repository
 	 * @param resource The resource to add
@@ -79,6 +80,7 @@ public class Verstor {
 		try {
 			File workingdir = git.getRepository().getDirectory().getParentFile();
 			File newresdir = new File(workingdir, resource.getResourceid());
+			boolean isupdate = newresdir.exists();
 			for (LocalizedFile localizedfile : resource.getLocalizedfiles()) {
 				FileUtils.copyFile(new File(localizedfile.getUri()), new File(newresdir, localizedfile.getIsocode()));
 			}
@@ -88,7 +90,10 @@ public class Verstor {
 				FileUtils.copyFile(new File(resource.getOrigin()), new File(newresdir, "origin"));
 			}
 			git.add().addFilepattern(newresdir.getName()).call();
-			git.commit().setMessage(String.format("Directory %s added.", newresdir.getName())).call();
+
+			String action = isupdate ? "updated" : "added";
+			git.commit().setMessage(String.format("Directory %s %s.", newresdir.getName(), action)).call();
+
 		} catch (GitAPIException | IOException e) {
 			logger.error("Error adding files.", e);
 		}
