@@ -84,11 +84,17 @@ public class Verstor {
 			for (LocalizedFile localizedfile : resource.getLocalizedfiles()) {
 				FileUtils.copyFile(new File(localizedfile.getUri()), new File(newresdir, localizedfile.getIsocode()));
 			}
-			FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
-					StandardCharsets.UTF_8);
+
+			/* Metadata does not change during updated. That would be fatal. */
+			if (!isupdate) {
+				FileUtils.writeStringToFile(new File(newresdir, "metadata"), this.gson.toJson(resource.getMetadata()),
+						StandardCharsets.UTF_8);
+			}
+
 			if (resource.getOrigin() != null) {
 				FileUtils.copyFile(new File(resource.getOrigin()), new File(newresdir, "origin"));
 			}
+
 			git.add().addFilepattern(newresdir.getName()).call();
 
 			String action = isupdate ? "updated" : "added";

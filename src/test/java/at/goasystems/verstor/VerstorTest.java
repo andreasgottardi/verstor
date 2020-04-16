@@ -26,6 +26,10 @@ class VerstorTest {
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
 		Git git = jge.createRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(git.getRepository().getDirectory().exists());
+
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -45,6 +49,10 @@ class VerstorTest {
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
 		Git git = jge.createRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(git.getRepository().getDirectory().exists());
+
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -67,6 +75,10 @@ class VerstorTest {
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
 		Git git = jge.createRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(git.getRepository().getDirectory().exists());
+
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
@@ -100,6 +112,10 @@ class VerstorTest {
 		/* Create repository directory. */
 		Verstor jge = new Verstor();
 		Git git = jge.createRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(git.getRepository().getDirectory().exists());
+
 		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
 		Resource res1 = generate("res1", isocodes);
 		Resource res2 = generate("res2", isocodes);
