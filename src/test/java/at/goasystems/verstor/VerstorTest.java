@@ -72,11 +72,22 @@ class VerstorTest {
 		Resource res2 = generate("res2", isocodes);
 		jge.addResource(git, res1);
 		jge.addResource(git, res2);
+
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		try {
+			res1.getLocalizedfiles().get(0).setUri(VerstorTest.class.getResource("/testdata/res1/de_DE.new").toURI());
+		} catch (URISyntaxException e) {
+			logger.error("Can't set resource.", e);
+		}
+		jge.addResource(git, res1);
+
 		List<Commit> commits = jge.getCommits(git, "");
-		assertTrue(commits.size() == 2);
+		assertTrue(commits.size() == 3);
 		commits = jge.getCommits(git, "res1");
+		assertTrue(commits.size() == 2);
+		commits = jge.getCommits(git, "res2");
 		assertTrue(commits.size() == 1);
 
 		/* Cleanup */
