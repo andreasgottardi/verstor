@@ -37,10 +37,10 @@ dependencies {
     api 'org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r'
     
     /* https://github.com/apache/commons-io */
-	implementation 'commons-io:commons-io:2.6'
+	api 'commons-io:commons-io:2.6'
 	
 	/* https://github.com/google/gson */
-	implementation 'com.google.code.gson:gson:2.8.6'
+	api 'com.google.code.gson:gson:2.8.6'
 }
 
 test {
