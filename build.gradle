@@ -34,7 +34,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
     
     /* JGit */
-    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r'
+    api 'org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r'
     
     /* https://github.com/apache/commons-io */
 	implementation 'commons-io:commons-io:2.6'
