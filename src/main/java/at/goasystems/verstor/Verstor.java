@@ -68,6 +68,11 @@ public class Verstor {
 		return newgit;
 	}
 
+	/**
+	 * Wrapper method for addResource(Git git, Resource resource).
+	 * 
+	 * @param resource The resource object to add.
+	 */
 	public void addResource(Resource resource) {
 		if (this.git != null) {
 			addResource(this.git, resource);
@@ -120,6 +125,20 @@ public class Verstor {
 			logger.error("Error adding files.", e);
 		}
 		return git;
+	}
+
+	/**
+	 * Wrapper method for removeResource(Git git, String resourceid).
+	 * 
+	 * @param resourceid the resource id to remove.
+	 */
+	public void removeResource(String resourceid) {
+		if (this.git != null) {
+			removeResource(this.git, resourceid);
+		} else {
+			logger.error("Git repository not set.");
+			logger.error("Use the method removeResource(Git git, String resourceid).");
+		}
 	}
 
 	/**
