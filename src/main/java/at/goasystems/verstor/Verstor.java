@@ -33,9 +33,16 @@ public class Verstor {
 
 	private static final Logger logger = LoggerFactory.getLogger(Verstor.class);
 	private Gson gson;
+	private Git git;
 
 	public Verstor() {
 		this.gson = new Gson();
+		this.git = null;
+	}
+
+	public Verstor(Git git) {
+		this.gson = new Gson();
+		this.git = git;
 	}
 
 	/**
@@ -51,14 +58,23 @@ public class Verstor {
 		}
 
 		/* Create repository. */
-		Git git = null;
+		Git newgit = null;
 		try {
-			git = Git.init().setDirectory(repositorydirectory).call();
+			newgit = Git.init().setDirectory(repositorydirectory).call();
 		} catch (IllegalStateException | GitAPIException e) {
 			logger.error("Can not initialize repository.", e);
 		}
 
-		return git;
+		return newgit;
+	}
+
+	public void addResource(Resource resource) {
+		if (this.git != null) {
+			addResource(this.git, resource);
+		} else {
+			logger.error("Git repository not set.");
+			logger.error("Use the method addResource(Git git, Resource resource).");
+		}
 	}
 
 	/**
