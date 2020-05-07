@@ -1,5 +1,6 @@
 package at.goasystems.verstor;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class Verstor {
+public class Verstor implements Closeable {
 
 	private static final Logger logger = LoggerFactory.getLogger(Verstor.class);
 	private Gson gson;
@@ -51,23 +52,35 @@ public class Verstor {
 	 * Initializes the repository
 	 * 
 	 * @param repositorydirectory The repository directory
-	 * @return The repository
+	 * @return The repository or null, if the specified directory already exists.
 	 */
 	public Git createRepository(File repositorydirectory) {
 
-		if (!repositorydirectory.exists()) {
-			repositorydirectory.mkdirs();
-		}
-
 		/* Create repository. */
 		Git newgit = null;
-		try {
-			newgit = Git.init().setDirectory(repositorydirectory).call();
-		} catch (IllegalStateException | GitAPIException e) {
-			logger.error("Can not initialize repository.", e);
+
+		if (repositorydirectory.exists()) {
+			logger.error("Directory already exists. Will not overwrite existing directories.");
+			logger.error("Please choose a different directory.");
+		} else {
+			repositorydirectory.mkdirs();
+			try {
+				newgit = Git.init().setDirectory(repositorydirectory).call();
+			} catch (IllegalStateException | GitAPIException e) {
+				logger.error("Can not initialize repository.", e);
+			}
 		}
 
 		return newgit;
+	}
+
+	/**
+	 * Creates a new repository and uses it internally
+	 * 
+	 * @param repositorydirectory Directory folder
+	 */
+	public void createAndSetRepository(File repositorydirectory) {
+		this.git = createRepository(repositorydirectory);
 	}
 
 	/**
@@ -320,5 +333,35 @@ public class Verstor {
 			logger.error("Error collecting git commits.", e);
 		}
 		return commithashes;
+	}
+
+	/**
+	 * Returns the used repository.
+	 * 
+	 * @return The embedded repository or null, if repository is not set.
+	 */
+	public Git getGit() {
+		if (this.git != null) {
+			return git;
+		} else {
+			logger.error(GITNOTSET);
+			logger.error("This method can only be used, if embedded repository is used.");
+			logger.error("Use constructor Verstor(Git).");
+			return null;
+		}
+	}
+
+	/**
+	 * Closes the embedded repository.
+	 */
+	@Override
+	public void close() throws IOException {
+		if (this.git != null) {
+			this.git.close();
+		} else {
+			logger.error(GITNOTSET);
+			logger.error("This method can only be used, if embedded repository is used.");
+			logger.error("Use constructor Verstor(Git).");
+		}
 	}
 }

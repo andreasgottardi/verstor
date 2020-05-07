@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 class VerstorTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(VerstorTest.class);
+	private static final String ERROR_CLOSING_VERSTOR = "Error closing verstor.";
 
 	@Test
 	public void testAddResource() {
@@ -39,8 +40,43 @@ class VerstorTest {
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 		assertTrue(new File(git.getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
 
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
+
 		/* Cleanup */
 		cleanup(git);
+	}
+
+	@Test
+	public void testAddResourceIntegrated() {
+
+		/* Create repository directory. */
+		Verstor jge = new Verstor();
+		jge.createAndSetRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(jge.getGit().getRepository().getDirectory().exists());
+
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
+		jge.addResource(res1);
+		jge.addResource(res2);
+
+		assertTrue(new File(jge.getGit().getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(jge.getGit().getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
+
+		/* Cleanup */
+		cleanup(jge.getGit());
 	}
 
 	@Test
@@ -65,8 +101,46 @@ class VerstorTest {
 
 		assertFalse(new File(git.getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
 
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
+
 		/* Cleanup */
 		cleanup(git);
+	}
+
+	@Test
+	public void testRemoveResourceIntegrated() {
+
+		/* Create repository directory. */
+		Verstor jge = new Verstor();
+		jge.createAndSetRepository(genTmpRepoDir());
+
+		/* Verifies that the ".git" repository directory exists. */
+		assertTrue(jge.getGit().getRepository().getDirectory().exists());
+
+		String[] isocodes = { "de_DE", "en_US", "es_ES", "fr_FR", "it_IT", };
+		Resource res1 = generate("res1", isocodes);
+		Resource res2 = generate("res2", isocodes);
+		jge.addResource(res1);
+		jge.addResource(res2);
+		assertTrue(new File(jge.getGit().getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+		assertTrue(new File(jge.getGit().getRepository().getDirectory().getParent(), res2.getResourceid()).exists());
+
+		jge.removeResource("res1");
+
+		assertFalse(new File(jge.getGit().getRepository().getDirectory().getParent(), res1.getResourceid()).exists());
+
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
+
+		/* Cleanup */
+		cleanup(jge.getGit());
 	}
 
 	@Test
@@ -101,6 +175,12 @@ class VerstorTest {
 		assertTrue(commits.size() == 2);
 		commits = jge.getCommits(git, "res2");
 		assertTrue(commits.size() == 1);
+
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
 
 		/* Cleanup */
 		cleanup(git);
@@ -143,6 +223,13 @@ class VerstorTest {
 		} catch (IOException e) {
 			logger.error("Error deleting file.", e);
 		}
+
+		try {
+			jge.close();
+		} catch (IOException e) {
+			logger.error(ERROR_CLOSING_VERSTOR, e);
+		}
+
 		/* Cleanup */
 		cleanup(git);
 	}
