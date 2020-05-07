@@ -35,6 +35,8 @@ public class Verstor {
 	private Gson gson;
 	private Git git;
 
+	private static final String GITNOTSET = "Git repository not set.";
+
 	public Verstor() {
 		this.gson = new Gson();
 		this.git = null;
@@ -77,8 +79,8 @@ public class Verstor {
 		if (this.git != null) {
 			addResource(this.git, resource);
 		} else {
-			logger.error("Git repository not set.");
-			logger.error("Use the method addResource(Git git, Resource resource).");
+			logger.error(GITNOTSET);
+			logger.error("Use the method addResource(Git, Resource).");
 		}
 	}
 
@@ -136,8 +138,8 @@ public class Verstor {
 		if (this.git != null) {
 			removeResource(this.git, resourceid);
 		} else {
-			logger.error("Git repository not set.");
-			logger.error("Use the method removeResource(Git git, String resourceid).");
+			logger.error(GITNOTSET);
+			logger.error("Use the method removeResource(Git, String).");
 		}
 	}
 
@@ -187,6 +189,22 @@ public class Verstor {
 	}
 
 	/**
+	 * Wrapper method for exportFileFromBranch(Git, String, Resource, OutputStream)
+	 * 
+	 * @param commithash The commit to get the file from
+	 * @param resource   The name of the resource
+	 * @param exportto   The output stream to save the files to
+	 */
+	public void exportFileFromBranch(String commithash, Resource resource, OutputStream exportto) {
+		if (this.git != null) {
+			exportFileFromBranch(this.git, commithash, resource.getResourceid(), exportto);
+		} else {
+			logger.error(GITNOTSET);
+			logger.error("Use the method exportFileFromBranch(Git, String, Resource, OutputStream).");
+		}
+	}
+
+	/**
 	 * Wrapper method for exportFileFromBranch(Git, String, String, OutputStream)
 	 * 
 	 * @param git        The repository
@@ -196,6 +214,22 @@ public class Verstor {
 	 */
 	public void exportFileFromBranch(Git git, String commithash, Resource resource, OutputStream exportto) {
 		exportFileFromBranch(git, commithash, resource.getResourceid(), exportto);
+	}
+
+	/**
+	 * Wrapper method for exportFileFromBranch(Git, String, String, OutputStream)
+	 * 
+	 * @param commithash The commit to get the file from
+	 * @param resource   The name of the resource
+	 * @param exportto   The output stream to save the files to
+	 */
+	public void exportFileFromBranch(String commithash, String resourceid, OutputStream exportto) {
+		if (this.git != null) {
+			exportFileFromBranch(this.git, commithash, resourceid, exportto);
+		} else {
+			logger.error(GITNOTSET);
+			logger.error("Use the method exportFileFromBranch(Git, String, String, OutputStream).");
+		}
 	}
 
 	/**
@@ -239,6 +273,22 @@ public class Verstor {
 			if (treeWalk != null) {
 				treeWalk.close();
 			}
+		}
+	}
+
+	/**
+	 * Wrapper method for getCommits(Git, String)
+	 * 
+	 * @param folder The resource folder name
+	 * @return List of commits
+	 */
+	public List<Commit> getCommits(String folder) {
+		if (this.git != null) {
+			return getCommits(this.git, folder);
+		} else {
+			logger.error(GITNOTSET);
+			logger.error("Use the method getCommits(Git, String).");
+			return new ArrayList<>();
 		}
 	}
 
