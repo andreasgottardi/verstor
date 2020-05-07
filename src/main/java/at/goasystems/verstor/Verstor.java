@@ -220,7 +220,7 @@ public class Verstor {
 	 * Wrapper method for exportFileFromBranch(Git, String, String, OutputStream)
 	 * 
 	 * @param commithash The commit to get the file from
-	 * @param resource   The name of the resource
+	 * @param resourceid The id of the resource
 	 * @param exportto   The output stream to save the files to
 	 */
 	public void exportFileFromBranch(String commithash, String resourceid, OutputStream exportto) {
